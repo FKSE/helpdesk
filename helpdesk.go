@@ -18,7 +18,7 @@ var log *logrus.Logger
 func Run(c *Configuration) {
 	// Init logger
 	log = logrus.New()
-	log.Info("Initializing server..")
+	log.Info("Initializing server...")
 	// init database
 	initDatabase(&c.Database)
 	// get router
@@ -32,7 +32,11 @@ func initDatabase(c *ConfigDatabase) {
 	// make connection
 	db, err := gorm.Open(c.Driver, c.ConnectionString())
 	if err != nil {
-		panic(err)
+		log.Panic(err)
+	}
+	// Test if database is reachable
+	if err = db.DB().Ping(); err != nil {
+		log.Fatal(err)
 	}
 	// Migration
 	db.AutoMigrate(&model.User{})
@@ -53,7 +57,7 @@ func NewRouter() (r *mux.Router) {
 	return r
 }
 
-// Request setupY
+// Request setup
 func RequestSetup(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// set json content type
