@@ -7,7 +7,10 @@ import (
 )
 
 func UserList(w http.ResponseWriter, r *http.Request) {
-	JsonError(w, "Internal server error", http.StatusInternalServerError)
+	JsonError(w, &ApiError{
+		Status: http.StatusInternalServerError,
+		Title: "Internal server error",
+	})
 }
 
 func UserCreate(w http.ResponseWriter, r *http.Request) {

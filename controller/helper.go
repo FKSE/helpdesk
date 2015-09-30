@@ -33,23 +33,21 @@ func DecodeRequestBody(w http.ResponseWriter, r *http.Request, v *interface{}) (
 	return nil
 }
 
+// As defined by http://jsonapi.org/format/#errors
 type ApiError struct {
-	Id string //Request url + time encoded
-	Status string
+	Status int
 	Code string
 	Title string
 	Detail string
+	Meta map[string]interface{}
 }
 
-func JsonError(w http.ResponseWriter, msg string, code int) {
-	err := map[string]map[string]interface{}{
-		"errors": {
-			"title": msg,
-			"status":code,
-		},
+func JsonError(w http.ResponseWriter, err *ApiError) {
+	r := map[string]*ApiError{
+		"errors": err,
 	}
 	// status
-	w.WriteHeader(code)
+	w.WriteHeader(err.Status)
 	// content
-	json.NewEncoder(w).Encode(err)
+	json.NewEncoder(w).Encode(r)
 }
